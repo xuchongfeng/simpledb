@@ -104,7 +104,11 @@ public class HeapFile implements DbFile {
      */
     public int numPages() {
         // some code goes here
-        return 0;
+        // return 0;
+    	BufferPool bp = Database.getBufferPool();
+    	int pageSize = bp.PAGE_SIZE;
+    	long fileSize = f.length();
+    	return (int)((fileSize) / pageSize);
     }
 
     // see DbFile.java for javadocs
@@ -122,12 +126,56 @@ public class HeapFile implements DbFile {
         return null;
         // not necessary for proj1
     }
+    
+    
+    class HeapFileIterator implements DbFileIterator {
+    	private Iterator<Tuple> tupleIterator;
+    	private int pgNo;
+    	private TransactionId tid;
+    	public HeapFileIterator(TransactionId tid) {
+    		this.tid = tid;
+    		tupleIterator = null;
+    		pgNo = 0;
+    	}
+    	public void open() throws TransactionAbortedException, DbException {
+    		HeapPageId hpi = new HeapPageId(getId(), pgNo);
+    		BufferPool bp = Database.getBufferPool();
+    		HeapPage hp = (HeapPage)bp.getPage(tid, hpi, null);
+    		tupleIterator = hp.iterator();
+    	}
+    	public boolean hasNext() throws TransactionAbortedException, DbException {
+    		if(tupleIterator == null) return false;
+    		if(tupleIterator.hasNext()) return true;
+    		int numPages = numPages();
+    		while(true) {
+    			pgNo++;
+    			if(pgNo >= numPages) return false;
+    			HeapPageId hpi = new HeapPageId(getId(), pgNo);
+    			BufferPool bp = Database.getBufferPool();
+    			HeapPage hp = (HeapPage)bp.getPage(tid, hpi, null);
+    			tupleIterator = hp.iterator();
+    			if(tupleIterator.hasNext()) return true;
+    		}
+    	}
+    	public Tuple next() {
+    		if(tupleIterator == null) throw new NoSuchElementException();
+    		return tupleIterator.next();
+    	}
+    	public void rewind() throws TransactionAbortedException, DbException {
+    		open();
+    	}
+    	public void close() {
+    		this.pgNo = 0;
+    		this.tupleIterator = null;
+    	}
+    }
 
     // see DbFile.java for javadocs
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
         // return null;
-    	return null;
+    	// return null;
+    	return new HeapFileIterator(tid);
     	
     }
 
