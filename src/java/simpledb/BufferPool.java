@@ -65,8 +65,12 @@ public class BufferPool {
     	
     	// read from buffer pool
     	for(Page page: pages) {
-    		if(pid.equals(page.getId()) && tid.equals(page.isDirty())) {
-    			return page;
+    		if(pid.equals(page.getId())) {
+    			TransactionId curTid = page.isDirty();
+    			if((curTid != null && tid.equals(curTid)) ||
+    					(curTid == null)) {
+    				return page;
+    			}
     		}
     	}
     	
