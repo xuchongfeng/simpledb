@@ -81,7 +81,8 @@ public class HeapFile implements DbFile {
 			int pageSize = BufferPool.PAGE_SIZE;
 	    	int offset = pageNo * pageSize;
 	    	byte[] pageContent = new byte[pageSize];
-			dis.read(pageContent, offset, pageSize);
+	    	dis.seek(offset);
+			dis.read(pageContent, 0, pageSize);
 			dis.close();
 			return new HeapPage((HeapPageId)pid, pageContent);
 		} catch (FileNotFoundException e) {
@@ -129,7 +130,8 @@ public class HeapFile implements DbFile {
     
     
     class HeapFileIterator implements DbFileIterator {
-    	private Iterator<Tuple> tupleIterator;
+		private static final long serialVersionUID = 1L;
+		private Iterator<Tuple> tupleIterator;
     	private int pgNo;
     	private TransactionId tid;
     	public HeapFileIterator(TransactionId tid) {
