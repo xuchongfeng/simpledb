@@ -29,6 +29,14 @@ public class TupleDesc implements Serializable {
             this.fieldName = n;
             this.fieldType = t;
         }
+        
+        public Type getFieldType() {
+        	return fieldType;
+        }
+        
+        public String getFieldName() {
+        	return fieldName;
+        }
 
         public String toString() {
             return fieldName + "(" + fieldType + ")";
@@ -91,6 +99,29 @@ public class TupleDesc implements Serializable {
     	int length = typeAr.length;
     	for(int i = 0; i < length; i++) {
     		descs.add(new TDItem(typeAr[i], null));
+    	}
+    }
+    
+    /**
+     * Constructor. Create a new tuple desc with tuple desc, and alias.
+     * 
+     * @param td
+     * @param alias
+     */
+    public TupleDesc(TupleDesc td, String alias) {
+    	int numFields = td.numFields();
+    	Type[] typeAr = new Type[numFields];
+    	String[] fieldAr = new String[numFields];
+    	
+    	Iterator<TDItem> iter = td.iterator();
+    	int index = 0;
+    	while(iter.hasNext()) {
+    		TDItem item = iter.next();
+    		typeAr[index] = item.getFieldType();
+    		fieldAr[index] = alias + "." + item.getFieldName();
+    	}
+    	for(int i = 0; i < numFields; i++) {
+    		descs.add(new TDItem(typeAr[i], fieldAr[i]));
     	}
     }
 
