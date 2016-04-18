@@ -10,6 +10,11 @@ import java.util.*;
 public class SeqScan implements DbIterator {
 
     private static final long serialVersionUID = 1L;
+    
+    private TransactionId tid;
+    private int tableid;
+    private String tableAlias;
+    private DbFileIterator iterator;
 
     /**
      * Creates a sequential scan over the specified table as a part of the
@@ -29,6 +34,9 @@ public class SeqScan implements DbIterator {
      */
     public SeqScan(TransactionId tid, int tableid, String tableAlias) {
         // some code goes here
+    	this.tid = tid;
+    	this.tableid = tableid;
+    	this.tableAlias = tableAlias;
     }
 
     /**
@@ -37,7 +45,8 @@ public class SeqScan implements DbIterator {
      *       be the actual name of the table in the catalog of the database
      * */
     public String getTableName() {
-        return null;
+    	Catalog ctag = Database.getCatalog();
+        return ctag.getTableName(tableid);
     }
     
     /**
@@ -46,7 +55,8 @@ public class SeqScan implements DbIterator {
     public String getAlias()
     {
         // some code goes here
-        return null;
+        // return null;
+    	return tableAlias;
     }
 
     /**
@@ -63,6 +73,8 @@ public class SeqScan implements DbIterator {
      */
     public void reset(int tableid, String tableAlias) {
         // some code goes here
+    	this.tableid = tableid;
+    	this.tableAlias = tableAlias;
     }
 
     public SeqScan(TransactionId tid, int tableid) {
@@ -71,6 +83,11 @@ public class SeqScan implements DbIterator {
 
     public void open() throws DbException, TransactionAbortedException {
         // some code goes here
+    	if(iterator != null) throw new DbException("SeqScan iterator is not null");
+    	Catalog ctag = Database.getCatalog();
+    	DbFile db = ctag.getDbFile(tableid);
+    	iterator = db.iterator(tid);
+    	iterator.open();
     }
 
     /**
@@ -84,26 +101,34 @@ public class SeqScan implements DbIterator {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
-        return null;
+        // return null;
+    	Catalog ctag = Database.getCatalog();
+    	TupleDesc td = ctag.getTupleDesc(tableid);
+    	return new TupleDesc(td, tableAlias);
     }
 
     public boolean hasNext() throws TransactionAbortedException, DbException {
         // some code goes here
-        return false;
+        // return false;
+    	if(iterator == null) throw new DbException("SeqScan Iterator is null");
+    	return iterator.hasNext();
     }
 
     public Tuple next() throws NoSuchElementException,
             TransactionAbortedException, DbException {
         // some code goes here
-        return null;
+    	if(iterator == null) throw new DbException("SeqScan Iterator is null");
+        return iterator.next();
     }
 
     public void close() {
         // some code goes here
+    	iterator.close();
     }
 
     public void rewind() throws DbException, NoSuchElementException,
             TransactionAbortedException {
         // some code goes here
+    	iterator.rewind();
     }
 }
