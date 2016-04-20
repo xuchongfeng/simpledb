@@ -42,6 +42,7 @@ public class StringField implements Field {
 	}
 
 	public boolean equals(Object field) {
+		if(!(field instanceof StringField)) return false;
 		return ((StringField) field).value.equals(value);
 	}
 

@@ -247,7 +247,7 @@ public class TupleDesc implements Serializable {
         // return false;
     	
     	// check o is null
-    	if(o == null) return false;
+    	// if(o == null) return false;
     	
     	// check type 
     	if(!(o instanceof TupleDesc)) return false;
