@@ -133,4 +133,5 @@ public class Predicate implements Serializable {
     			" op = " + op.toString() +
     			" operand = " + operand.toString();
     }
+    
 }
