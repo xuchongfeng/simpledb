@@ -2,6 +2,8 @@
 <classpath>
 	<classpathentry kind="src" output="bin/src" path="src/java"/>
 	<classpathentry kind="src" output="bin/test" path="test"/>
+	<classpathentry kind="src" path="project2"/>
+	<classpathentry kind="src" path="operators"/>
 	<classpathentry kind="lib" path="lib/jline-0.9.94.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/zql.jar"/>
