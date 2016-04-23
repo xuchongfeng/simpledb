@@ -45,6 +45,29 @@ public class Tuple implements Serializable {
     	}
     	
     }
+    
+    /**
+     * Create a new tuple with two tuples
+     * 
+     * @param tuple1
+     * 				tuple1
+     * 
+     * @param tuple2
+     * 				tuple2
+     */
+    public Tuple(Tuple tuple1, Tuple tuple2) {
+    	TupleDesc td1 = tuple1.getTupleDesc();
+    	TupleDesc td2 = tuple2.getTupleDesc();
+    	this.td = TupleDesc.merge(td1, td2);
+    	
+    	this.fields = new ArrayList<Field>();
+    	
+    	Iterator<Field> iter = tuple1.fields();
+    	while(iter.hasNext()) fields.add(iter.next());
+    	
+    	iter = tuple2.fields();
+    	while(iter.hasNext()) fields.add(iter.next());
+    }
 
     /**
      * @return The TupleDesc representing the schema of this tuple.
